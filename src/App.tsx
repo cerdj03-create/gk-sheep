@@ -219,16 +219,16 @@ export default function App() {
 
   const advantages = [
     { icon: <Zap className="text-yellow-400" />, title: "Доставка до 30 минут", desc: "Стараемся собрать и привезти ваш заказ максимально быстро после подтверждения." },
-    { icon: <Clock className="text-blue-400" />, title: "Работаем без очередей", desc: "Вам не нужно ждать — мы сразу берем ваш список в работу и отправляемся в магазин." },
+    { icon: <Clock className="text-blue-400" />, title: "Ваш личный шоппер", desc: "Мы идем в магазин вместо вас, выбираем лучшие товары и привозим их прямо к двери." },
     { icon: <MessageCircle className="text-green-400" />, title: "Сразу отвечаем", desc: "Наши операторы на связи до 03:00. Пишите в любой мессенджер — ответим мгновенно." },
     { icon: <ShieldCheck className="text-purple-400" />, title: "Помощь в нужное время", desc: "Выручаем, когда товары первой необходимости нужны срочно. Честно и прозрачно." }
   ];
 
   const steps = [
     { number: "01", title: "Свяжитесь с нами", desc: "Напишите список нужных товаров в любой удобный мессенджер." },
-    { number: "02", title: "Согласование", desc: "Мы проверяем наличие товаров и рассчитываем итоговую стоимость." },
-    { number: "03", title: "Оплата", desc: "Курьер в магазине сообщает точную сумму. Вы переводите средства, и мы завершаем покупку." },
-    { number: "04", title: "Доставка", desc: "Сразу после оплаты курьер привозит покупки к вашему дому." }
+    { number: "02", title: "Мы идем в магазин", desc: "Курьер отправляется в ближайший открытый магазин и проверяет наличие товаров." },
+    { number: "03", title: "Оплата по чеку", desc: "Вы переводите средства за покупки по чеку из магазина + стоимость доставки." },
+    { number: "04", title: "Доставка", desc: "Сразу после покупки курьер привозит товары прямо к вашему дому." }
   ];
 
   const categories = [
@@ -292,10 +292,6 @@ export default function App() {
             animate={{ opacity: 1, scale: 1 }}
             className="flex flex-col items-center gap-4 mb-8"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-300 text-xs font-bold uppercase tracking-wider">
-              <Zap size={14} className="fill-blue-400" />
-              <span>Мы только запустились — работаем максимально быстро!</span>
-            </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-blue-400 text-sm font-medium">
               <Clock size={16} />
               <span>Доставка с 22:00 до 03:00 в Горячем Ключе</span>
@@ -305,25 +301,16 @@ export default function App() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-[1.1]"
+            className="text-4xl md:text-7xl font-extrabold mb-8 tracking-tight leading-[1.1]"
           >
             GK Night — <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">ночная доставка продуктов</span> до 30 минут
           </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed"
-          >
-            Помогаем быстро получить нужные товары, когда магазины уже закрыты. Мы только открылись, поэтому сейчас особенно быстро отвечаем и обрабатываем каждый заказ.
-          </motion.p>
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col items-center gap-6 mb-12"
+            className="flex flex-col items-center gap-4 mb-12"
           >
             <button onClick={() => setIsContactOpen(true)} className="block w-full sm:w-auto">
               <motion.div 
@@ -335,6 +322,15 @@ export default function App() {
                 Заказать доставку
               </motion.div>
             </button>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center gap-2 text-blue-400/80 text-sm font-semibold"
+            >
+              <Zap size={14} className="fill-blue-400" />
+              <span>Мы только запустились — работаем максимально быстро!</span>
+            </motion.div>
           </motion.div>
           
           <motion.div 
@@ -494,7 +490,7 @@ export default function App() {
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">Готовы сделать заказ?</h2>
             <p className="text-xl text-zinc-400 mb-12">
-              Свяжитесь с нами любым удобным способом. Отвечаем мгновенно и сразу принимаем заявку в работу.
+              Отвечаем мгновенно и сразу принимаем заявку в работу.
             </p>
             
             <div className="flex flex-col items-center justify-center gap-6">
@@ -509,7 +505,13 @@ export default function App() {
                     Заказать доставку
                   </motion.div>
                 </button>
-                <span className="text-zinc-500 text-sm">ВК, Телеграм, WhatsApp</span>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex items-center gap-2 text-blue-400/80 text-sm font-semibold">
+                    <Zap size={14} className="fill-blue-400" />
+                    <span>Мы только запустились — работаем максимально быстро!</span>
+                  </div>
+                  <span className="text-zinc-500 text-xs">ВК, Телеграм, WhatsApp</span>
+                </div>
               </div>
             </div>
           </motion.div>
