@@ -17,15 +17,30 @@ import {
   Utensils,
   Moon,
   ArrowRight,
-  X
+  X,
+  Send,
+  MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // --- Constants ---
 const WHATSAPP_NUMBER = '79000000000'; // Placeholder
-const PHONE_NUMBER = '+7 (900) 000-00-00'; // Placeholder
+const TELEGRAM_USERNAME = 'gknight_gk'; // Placeholder
+const VK_LINK = 'https://vk.com/gknight_gk'; // Placeholder
+
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`;
-const PHONE_LINK = `tel:${WHATSAPP_NUMBER}`;
+const TELEGRAM_LINK = `https://t.me/${TELEGRAM_USERNAME}`;
+
+// --- Analytics ---
+const trackClick = (platform: string) => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'click_messenger', {
+      'messenger_platform': platform,
+      'event_category': 'engagement',
+      'event_label': `Order via ${platform}`
+    });
+  }
+};
 
 // --- Components ---
 
@@ -87,7 +102,7 @@ const SectionTitle = ({ title, subtitle }: { title: string; subtitle?: string })
 const LegalModal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onClose: () => void; title: string; content: React.ReactNode }) => (
   <AnimatePresence>
     {isOpen && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -99,6 +114,7 @@ const LegalModal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onCl
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-3xl p-8 shadow-2xl"
         >
           <button 
@@ -117,20 +133,99 @@ const LegalModal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onCl
   </AnimatePresence>
 );
 
+const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-md"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="relative w-full max-w-sm bg-zinc-900 border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+        >
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
+          
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-full transition-colors text-zinc-500 hover:text-white"
+          >
+            <X size={20} />
+          </button>
+
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold mb-2">Заказать доставку</h3>
+            <p className="text-zinc-400 text-sm">Выберите удобный мессенджер</p>
+          </div>
+
+          <div className="space-y-3">
+            <a 
+              href={VK_LINK} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={() => trackClick('VK')}
+              className="flex items-center gap-4 p-4 rounded-2xl bg-blue-400/10 border border-blue-400/20 hover:bg-blue-400/20 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-900/20 group-hover:scale-110 transition-transform">
+                <MessageSquare size={24} />
+              </div>
+              <div className="font-bold text-zinc-200">ВКонтакте</div>
+            </a>
+
+            <a 
+              href={TELEGRAM_LINK} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={() => trackClick('Telegram')}
+              className="flex items-center gap-4 p-4 rounded-2xl bg-blue-600/10 border border-blue-500/20 hover:bg-blue-600/20 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-900/20 group-hover:scale-110 transition-transform">
+                <Send size={24} />
+              </div>
+              <div className="font-bold text-blue-400">Telegram</div>
+            </a>
+
+            <a 
+              href={WHATSAPP_LINK} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={() => trackClick('WhatsApp')}
+              className="flex items-center gap-4 p-4 rounded-2xl bg-green-600/10 border border-green-500/20 hover:bg-green-600/20 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-green-600 flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-110 transition-transform">
+                <MessageCircle size={24} />
+              </div>
+              <div className="font-bold text-green-400">WhatsApp</div>
+            </a>
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);
+
 // --- Main App ---
 
 export default function App() {
   const [activeLegal, setActiveLegal] = useState<'offer' | 'return' | null>(null);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const advantages = [
-    { icon: <Moon className="text-blue-400" />, title: "Ночная доставка", desc: "Работаем с 22:00 до 06:00, когда большинство магазинов закрыто. По Горячему Ключу." },
-    { icon: <MessageCircle className="text-green-400" />, title: "Заказ через мессенджер", desc: "Просто напишите список покупок в WhatsApp, и мы оперативно ответим вам." },
-    { icon: <Zap className="text-yellow-400" />, title: "Оперативность", desc: "Стараемся собрать и привезти ваш заказ максимально быстро после подтверждения." },
+    { icon: <Zap className="text-yellow-400" />, title: "Доставка до 30 минут", desc: "Стараемся собрать и привезти ваш заказ максимально быстро после подтверждения." },
+    { icon: <Clock className="text-blue-400" />, title: "Работаем без очередей", desc: "Вам не нужно ждать — мы сразу берем ваш список в работу и отправляемся в магазин." },
+    { icon: <MessageCircle className="text-green-400" />, title: "Сразу отвечаем", desc: "Наши операторы на связи до 03:00. Пишите в любой мессенджер — ответим мгновенно." },
     { icon: <ShieldCheck className="text-purple-400" />, title: "Помощь в нужное время", desc: "Выручаем, когда товары первой необходимости нужны срочно. Честно и прозрачно." }
   ];
 
   const steps = [
-    { number: "01", title: "Свяжитесь с нами", desc: "Напишите список нужных товаров в WhatsApp или позвоните." },
+    { number: "01", title: "Свяжитесь с нами", desc: "Напишите список нужных товаров в любой удобный мессенджер." },
     { number: "02", title: "Согласование", desc: "Мы проверяем наличие товаров и рассчитываем итоговую стоимость." },
     { number: "03", title: "Оплата", desc: "Курьер в магазине сообщает точную сумму. Вы переводите средства, и мы завершаем покупку." },
     { number: "04", title: "Доставка", desc: "Сразу после оплаты курьер привозит покупки к вашему дому." }
@@ -164,7 +259,7 @@ export default function App() {
             y: 0,
             transition: { duration: 2, ease: "easeOut" }
           }}
-          className="absolute top-20 right-[10%] md:right-[20%] z-0 pointer-events-none"
+          className="absolute top-12 md:top-20 right-4 md:right-[20%] z-0 pointer-events-none"
         >
           <motion.div
             animate={{ 
@@ -179,7 +274,7 @@ export default function App() {
             className="relative"
           >
             {/* The Moon Shape */}
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-100 to-transparent relative overflow-hidden">
+            <div className="w-20 h-20 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-100 to-transparent relative overflow-hidden">
               <div className="absolute inset-0 bg-blue-400/20 blur-xl" />
               {/* Craters/Texture */}
               <div className="absolute top-4 left-6 w-4 h-4 rounded-full bg-blue-900/10" />
@@ -195,10 +290,16 @@ export default function App() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-blue-400 text-sm font-medium mb-8"
+            className="flex flex-col items-center gap-4 mb-8"
           >
-            <Clock size={16} />
-            <span>Доставка с 22:00 до 06:00 в Горячем Ключе</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-300 text-xs font-bold uppercase tracking-wider">
+              <Zap size={14} className="fill-blue-400" />
+              <span>Мы только запустились — работаем максимально быстро!</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-blue-400 text-sm font-medium">
+              <Clock size={16} />
+              <span>Доставка с 22:00 до 03:00 в Горячем Ключе</span>
+            </div>
           </motion.div>
           
           <motion.h1 
@@ -206,7 +307,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-[1.1]"
           >
-            GK Night — <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">ночная доставка</span> продуктов
+            GK Night — <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">ночная доставка продуктов</span> до 30 минут
           </motion.h1>
           
           <motion.p 
@@ -215,23 +316,25 @@ export default function App() {
             transition={{ delay: 0.1 }}
             className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Помогаем быстро получить нужные товары, когда магазины уже закрыты. Доставляем по всему Горячему Ключу прямо до двери.
+            Помогаем быстро получить нужные товары, когда магазины уже закрыты. Мы только открылись, поэтому сейчас особенно быстро отвечаем и обрабатываем каждый заказ.
           </motion.p>
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+            className="flex flex-col items-center gap-6 mb-12"
           >
-            <Button variant="secondary" className="min-w-[240px]" href={WHATSAPP_LINK}>
-              <MessageCircle size={20} />
-              Написать в WhatsApp
-            </Button>
-            <Button variant="outline" className="min-w-[240px]" href={PHONE_LINK}>
-              <Phone size={20} />
-              Позвонить
-            </Button>
+            <button onClick={() => setIsContactOpen(true)} className="block w-full sm:w-auto">
+              <motion.div 
+                whileHover={{ y: -2, scale: 1.02 }} 
+                whileTap={{ scale: 0.98 }}
+                className="px-8 py-5 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-3 active:scale-95 text-center bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 min-w-[280px] text-xl"
+              >
+                <MessageCircle size={24} />
+                Заказать доставку
+              </motion.div>
+            </button>
           </motion.div>
           
           <motion.div 
@@ -269,11 +372,15 @@ export default function App() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -5, borderColor: "rgba(59, 130, 246, 0.3)" }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-colors"
+                transition={{ 
+                  delay: i * 0.1,
+                  borderColor: { duration: 0.3 }
+                }}
+                className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 transition-colors cursor-default"
               >
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   {adv.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-3">{adv.title}</h3>
@@ -328,9 +435,10 @@ export default function App() {
                 key={i}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
+                whileHover={{ x: 5, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="flex items-center gap-4 p-5 rounded-2xl bg-zinc-900/80 border border-white/5"
+                className="flex items-center gap-4 p-5 rounded-2xl bg-zinc-900/80 border border-white/5 transition-colors cursor-default"
               >
                 <div className="text-blue-400">
                   {cat.icon}
@@ -345,7 +453,12 @@ export default function App() {
       {/* Why Night Delivery */}
       <section className="py-24 px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="relative p-12 md:p-20 rounded-[40px] bg-gradient-to-br from-zinc-900 to-black border border-white/10 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="relative p-12 md:p-20 rounded-[40px] bg-gradient-to-br from-zinc-900 to-black border border-white/10 overflow-hidden"
+          >
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 blur-[100px] -mr-48 -mt-48" />
             
             <div className="relative z-10 max-w-2xl">
@@ -357,13 +470,17 @@ export default function App() {
                 Закончились продукты? Нужно что-то срочно для дома или захотелось перекусить? Мы поможем с доставкой доступных товаров первой необходимости, включая блюда из <strong>Rostic's</strong>. GK Night — ваш помощник в ночное время, когда важен комфорт и скорость.
               </p>
               <div className="flex items-center gap-4 text-white font-semibold">
-                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                <motion.div 
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center"
+                >
                   <ArrowRight size={24} />
-                </div>
+                </motion.div>
                 <span>Ваш комфорт — наша работа</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -380,21 +497,19 @@ export default function App() {
               Свяжитесь с нами любым удобным способом. Отвечаем мгновенно и сразу принимаем заявку в работу.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <div className="flex flex-col items-center justify-center gap-6">
               <div className="flex flex-col items-center gap-4 w-full sm:w-auto">
-                <Button variant="secondary" className="w-full sm:min-w-[280px] py-5 text-lg" href={WHATSAPP_LINK}>
-                  <MessageCircle size={24} />
-                  Написать в WhatsApp
-                </Button>
-                <span className="text-zinc-500 text-sm">Самый быстрый способ</span>
-              </div>
-              
-              <div className="flex flex-col items-center gap-4 w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:min-w-[280px] py-5 text-lg" href={PHONE_LINK}>
-                  <Phone size={24} />
-                  Позвонить нам
-                </Button>
-                <span className="text-zinc-500 text-sm">{PHONE_NUMBER}</span>
+                <button onClick={() => setIsContactOpen(true)} className="block w-full sm:w-auto">
+                  <motion.div 
+                    whileHover={{ y: -2, scale: 1.02 }} 
+                    whileTap={{ scale: 0.98 }}
+                    className="px-10 py-6 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-3 active:scale-95 text-center bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 w-full sm:min-w-[320px] text-2xl"
+                  >
+                    <MessageCircle size={28} />
+                    Заказать доставку
+                  </motion.div>
+                </button>
+                <span className="text-zinc-500 text-sm">ВК, Телеграм, WhatsApp</span>
               </div>
             </div>
           </motion.div>
@@ -407,11 +522,12 @@ export default function App() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
             <div>
               <h3 className="text-2xl font-bold mb-2 tracking-tighter">GK Night</h3>
-              <p className="text-zinc-500 text-sm">Сервис ночной доставки в Горячем Ключе (22:00 – 06:00)</p>
+              <p className="text-zinc-500 text-sm">Сервис ночной доставки в Горячем Ключе (22:00 – 03:00)</p>
             </div>
             
             <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-zinc-400">
-              <a href={PHONE_LINK} className="hover:text-white transition-colors">{PHONE_NUMBER}</a>
+              <button onClick={() => setIsContactOpen(true)} className="hover:text-white transition-colors cursor-pointer">Заказать</button>
+              <a href={TELEGRAM_LINK} className="hover:text-white transition-colors">Telegram</a>
               <a href={WHATSAPP_LINK} className="hover:text-white transition-colors">WhatsApp</a>
               <button onClick={() => setActiveLegal('offer')} className="hover:text-white transition-colors cursor-pointer">Оферта</button>
               <button onClick={() => setActiveLegal('return')} className="hover:text-white transition-colors cursor-pointer">Политика возврата</button>
@@ -439,7 +555,7 @@ export default function App() {
             <h4 className="text-white font-bold mt-4">1. Предмет услуг</h4>
             <p>Сервис оказывает услуги по поручению клиента: поиск, приобретение и доставка товаров из розничных магазинов и заведений общественного питания. Мы являемся курьерской службой-посредником.</p>
             <h4 className="text-white font-bold mt-4">2. Подтверждение заказа</h4>
-            <p>Заказ считается принятым к исполнению только после того, как оператор подтвердит в переписке или по телефону: наличие товаров (или возможность их покупки), итоговую стоимость товаров и услуг, а также ориентировочное время доставки.</p>
+            <p>Заказ считается принятым к исполнению только после того, как оператор подтвердит в переписке. Мы согласуем наличие товаров, итоговую стоимость и время доставки.</p>
             <h4 className="text-white font-bold mt-4">3. Порядок оплаты</h4>
             <p>Оплата производится дистанционным способом после того, как курьер в торговой точке подтвердит наличие и точную стоимость товаров. Клиент обязан перевести полную сумму (стоимость товаров + услуги доставки), после чего курьер завершает покупку и осуществляет доставку по адресу.</p>
             <h4 className="text-white font-bold mt-4">4. Ограничения</h4>
@@ -466,6 +582,67 @@ export default function App() {
           </>
         }
       />
+
+      <ContactModal 
+        isOpen={isContactOpen} 
+        onClose={() => setIsContactOpen(false)} 
+      />
+
+      {/* Sticky Floating Button */}
+      <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 flex flex-col items-end gap-4 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 1 }}
+          className="pointer-events-auto relative"
+        >
+          <button
+            onClick={() => setIsContactOpen(true)}
+            className="group relative flex items-center justify-center h-16 sm:h-20 bg-blue-600 text-white rounded-full shadow-2xl shadow-blue-600/40 hover:bg-blue-500 transition-all active:scale-95 px-6 sm:px-8 gap-3"
+          >
+            {/* Custom Pulsing effect */}
+            <motion.div 
+              className="absolute inset-0 rounded-full bg-blue-600 opacity-20"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0, 0.2] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            
+            <MessageCircle size={28} className="relative z-10 group-hover:scale-110 transition-transform" />
+            <span className="relative z-10 font-bold text-lg sm:text-xl">Заказать</span>
+          </button>
+
+          {/* Discount Badge */}
+          <motion.div 
+            initial={{ rotate: -12, scale: 0 }}
+            animate={{ 
+              rotate: [-12, -10, -12],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{ 
+              rotate: {
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              },
+              scale: {
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              },
+              initial: {
+                delay: 2,
+                type: "spring"
+              }
+            }}
+            className="absolute -top-4 -left-4 bg-yellow-400 text-black px-3 py-1 rounded-lg text-[10px] font-black shadow-[0_10px_20px_rgba(250,204,21,0.4)] border-2 border-black z-20 whitespace-nowrap select-none"
+          >
+            СКИДКА НА 1-Й ЗАКАЗ!
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Mobile Bottom Bar (Alternative for mobile if preferred, but sticky button is good too) */}
+      {/* Here we just use the sticky button for both as requested, but adjusted position slightly */}
     </div>
   );
 }
