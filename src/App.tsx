@@ -31,11 +31,19 @@ const WHATSAPP_LINK = "https://wa.me/79186400300";
 // --- Analytics ---
 const trackClick = (platform: string) => {
   if (typeof window !== 'undefined' && (window as any).gtag) {
-    console.log(`Tracking click: ${platform}`); // Debug log
-    (window as any).gtag('event', 'click_messenger', {
-      'messenger_platform': platform,
+    const eventName = `click_${platform.toLowerCase().replace(/\s+/g, '_')}`;
+    console.log(`Tracking event: ${eventName}`); // Debug log
+    
+    // Send specific event for each platform (e.g., click_whatsapp, click_telegram)
+    (window as any).gtag('event', eventName, {
       'event_category': 'engagement',
       'event_label': `Order via ${platform}`
+    });
+
+    // Also keep the general event with parameters for advanced reporting
+    (window as any).gtag('event', 'messenger_interaction', {
+      'platform': platform,
+      'event_category': 'engagement'
     });
   } else {
     console.warn('Google Analytics (gtag) not found');
