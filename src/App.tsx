@@ -24,21 +24,21 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 // --- Constants ---
-const WHATSAPP_NUMBER = '79000000000'; // Placeholder
-const TELEGRAM_USERNAME = 'gknight_gk'; // Placeholder
-const VK_LINK = 'https://vk.com/gknight_gk'; // Placeholder
-
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`;
-const TELEGRAM_LINK = `https://t.me/${TELEGRAM_USERNAME}`;
+const VK_LINK = "https://vk.com/im?sel=-229562557";
+const TELEGRAM_LINK = "https://t.me/GKNIGHT_bot";
+const WHATSAPP_LINK = "https://wa.me/79186400300";
 
 // --- Analytics ---
 const trackClick = (platform: string) => {
   if (typeof window !== 'undefined' && (window as any).gtag) {
+    console.log(`Tracking click: ${platform}`); // Debug log
     (window as any).gtag('event', 'click_messenger', {
       'messenger_platform': platform,
       'event_category': 'engagement',
       'event_label': `Order via ${platform}`
     });
+  } else {
+    console.warn('Google Analytics (gtag) not found');
   }
 };
 
@@ -312,7 +312,13 @@ export default function App() {
             transition={{ delay: 0.2 }}
             className="flex flex-col items-center gap-4 mb-12"
           >
-            <button onClick={() => setIsContactOpen(true)} className="block w-full sm:w-auto">
+            <button 
+              onClick={() => {
+                setIsContactOpen(true);
+                trackClick('Hero CTA');
+              }} 
+              className="block w-full sm:w-auto"
+            >
               <motion.div 
                 whileHover={{ y: -2, scale: 1.02 }} 
                 whileTap={{ scale: 0.98 }}
@@ -495,7 +501,13 @@ export default function App() {
             
             <div className="flex flex-col items-center justify-center gap-6">
               <div className="flex flex-col items-center gap-4 w-full sm:w-auto">
-                <button onClick={() => setIsContactOpen(true)} className="block w-full sm:w-auto">
+                <button 
+                  onClick={() => {
+                    setIsContactOpen(true);
+                    trackClick('Final CTA');
+                  }} 
+                  className="block w-full sm:w-auto"
+                >
                   <motion.div 
                     whileHover={{ y: -2, scale: 1.02 }} 
                     whileTap={{ scale: 0.98 }}
